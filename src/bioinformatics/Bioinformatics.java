@@ -142,11 +142,25 @@ public class Bioinformatics {
             throw new IllegalArgumentException("Invalid symbol");
         }
     }
+    
+    public static ArrayList findKMerPositions(String genome, String kMer){
+        ArrayList kMer_positions = new ArrayList();
+        int kMer_length = kMer.length();
+        for (int i = 0; i < genome.length() - (kMer_length - 1); i++) {
+            if (genome.substring(i, i + kMer_length).equals(kMer)){ 
+                kMer_positions.add(i);
+            }
+        }
+        return kMer_positions;
+    }
 
     public static void main(String[] args) {
        // System.out.print(topKey(kMerCount("acaaccccac", 2)));
         System.out.println(kMerUnifiedCount("ccgg", 2));
+        System.out.println(topKey(kMerUnifiedCount("ccgg", 2)));
         System.out.println("\n" + transcriptGenome("att"));
+        
+        System.out.println(findKMerPositions("acttgactattt", "tt"));
     }
 
 }
