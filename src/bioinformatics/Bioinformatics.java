@@ -144,7 +144,7 @@ public class Bioinformatics {
     }
     
     public static ArrayList findKMerPositions(String genome, String kMer){
-        ArrayList kMer_positions = new ArrayList();
+        ArrayList<Integer> kMer_positions = new ArrayList<Integer>();
         int kMer_length = kMer.length();
         for (int i = 0; i < genome.length() - (kMer_length - 1); i++) {
             if (genome.substring(i, i + kMer_length).equals(kMer)){ 
@@ -153,14 +153,78 @@ public class Bioinformatics {
         }
         return kMer_positions;
     }
+    
+    /*public static ArrayList findKMerClumps(String genome, int k, int l) {
+        //ArrayList<Integer> kMer_positions = findKMerPositions(genome, kMer);
+        //ArrayList kMer_list = new ArrayList();
+        //ArrayList clump_positions = new ArrayList();
+        Hashtable<String, Integer> clump_count = new Hashtable();
+        String currentKey;
+        Integer currentCount = 0;
+        int genome_size = genome.length();
+        
+        for (int i = 0; i < genome.length() - (k - 1); i++) {
+            String current_kMer = genome.substring(i, k + i);
+            currentCount = clump_count.get(current_kMer);
+            
+            if (!kMer_list.contains(current_kMer)){
+                kMer_list.add(current_kMer);
+                
+                if ()
+            }
 
+            
+        }
+    }
+    */
+    
+    public static ArrayList findKMerClumps(String genome, int k, int l){
+        Hashtable<String, Integer> kMer_positions = new Hashtable();
+        ArrayList clump_list = new ArrayList();
+        int genome_size = genome.length();
+        int previous_positions;
+        
+        //loops until it reaches te end of the genome minus the kmer length
+        for (int i = 0; i < genome_size - (k - 1); i++) {
+            String current_kMer = genome.substring(i, k + i);
+            
+            // if the clump list has the current kmer...
+            if (!clump_list.contains(current_kMer)){
+                // if the kmer positions list doesn't have the current kmer...
+                if (!kMer_positions.contains(current_kMer)){
+                    // put that kmer and its position in the kmer positions list
+                    kMer_positions.put(current_kMer, i);
+                }
+                // otherwise, if the kmer list doesn't have current kmer...
+                else{
+                
+                    // if the current index minus the index of the previous position of kmer is less than L...
+                    if ((i - kMer_positions.get(current_kMer)) <= l){
+                        // add the kmer to the clump list
+                        clump_list.add(current_kMer);
+                        
+                    }
+                    // otherwise, replace the previous position of kmer with the current one
+                    else{
+                        kMer_positions.replace(current_kMer, i);
+                    }
+                //}
+                }
+            }
+        }
+        
+        return clump_list;
+    }
+    
     public static void main(String[] args) {
        // System.out.print(topKey(kMerCount("acaaccccac", 2)));
-        System.out.println(kMerUnifiedCount("ccgg", 2));
-        System.out.println(topKey(kMerUnifiedCount("ccgg", 2)));
-        System.out.println("\n" + transcriptGenome("att"));
+        //System.out.println(kMerUnifiedCount("ccgg", 2));
+        //System.out.println(topKey(kMerUnifiedCount("ccgg", 2)));
+        //System.out.println("\n" + transcriptGenome("att"));
         
-        System.out.println(findKMerPositions("acttgactattt", "tt"));
+        //System.out.println(findKMerPositions("acttgactattt", "tt"));
+        
+        System.out.println(findKMerClumps("aataaaaaat", 2, 2));
     }
 
 }
