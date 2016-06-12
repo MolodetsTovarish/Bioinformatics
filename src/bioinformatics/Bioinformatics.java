@@ -21,6 +21,9 @@ import java.util.Set;
  */
 public class Bioinformatics {
 
+        static Boolean In_Clump = true;
+        static Boolean Possible_Clump = false;
+    
     // Returns the k-mers of k length found in the genome, and how often it appears
     public static Hashtable kMerCount(String genome, int k) {
         Hashtable<String, Integer> kMer_counts = new Hashtable();
@@ -171,7 +174,7 @@ public class Bioinformatics {
                     // put that kmer and its position in the kmer positions list
                     kMer_positions.put(current_kMer, i);
                 }
-                // otherwise, if the kmer list doesn't have current kmer...
+                // otherwise, if the kmer list does have current kmer...
                 else{
                     // if the current index minus the index of the previous position of kmer minus the length of kmer (i - prev i - k) is less than L...
                     if ((i - prev_position - k) <= l){
@@ -188,15 +191,91 @@ public class Bioinformatics {
         return clump_list;
     }
     
+    public static Hashtable kMerClumpCount(String genome, int k, int l) {
+        Hashtable<String, Integer> kMer_positions = new Hashtable();
+        Hashtable<String, ArrayList> clump_list = new Hashtable();
+        Hashtable<String, Boolean> clump_states = new Hashtable();
+        int genome_size = genome.length();
+
+        for (int i = 0; i < genome_size - (k - 1); i++) {
+            String current_kMer = genome.substring(i, k + i);
+            Integer prev_position = kMer_positions.get(current_kMer);
+            Boolean current_state = clump_states.get(current_kMer);
+            // if the kMer position list doesn't have the current kmer (first time seeing the kmer)...
+            if (current_state == null) {
+               
+                clump_states.put(current_kMer, Possible_Clump);
+            } 
+            
+            else {
+                boolean makes_clump = (i - prev_position - k) <= l;
+                if (current_state == Possible_Clump){
+                    //last kmer position - current < l
+                    if (makes_clump){
+                        clump_states.put(current_kMer, In_Clump);
+                        ///if clump positions is empty: get, create, add, put back
+                        if (clump_list.get(current_kMer) == null){
+                            ArrayList clump_positions = new ArrayList();
+                            clump_positions.add(prev_position);
+                            clump_list.put(current_kMer, clump_positions);
+                        }
+
+                        //if clump positions has list: get, add, put back
+                        else {
+                            ArrayList clump_positions = clump_list.get(current_kMer);
+                            clump_positions.add(prev_position);
+                            clump_list.put(current_kMer, clump_positions);
+                        }
+                        // The new clump should be added
+                    }
+                
+                }
+                
+                else {
+                    // we are  in a clump
+                    //last kmer position - current < l
+                    if (!makes_clump){
+                        clump_states.put(current_kMer, Possible_Clump);
+                    }
+                }
+            }
+            kMer_positions.put(current_kMer, i);
+
+        }
+        return clump_list;
+    }
+    
+    
+    /*if (prev_position == null){
+                    // put that kmer and its position in the kmer positions list
+                    kMer_positions.put(current_kMer, i);
+                }
+                
+                // otherwise, if the kmer list does have current kmer...
+                else {
+                    // if the current index minus the index of the previous position of kmer minus the length of kmer (i - prev i - k) is less than L...
+                    if ((i - prev_position - k) <= l){
+                        // add the kmer to the clump list
+                        clump_list.put(c, null);
+                        clump_states.put(current_kMer, inClump);
+                    }
+                    
+                    // otherwise, replace the previous position of kmer with the current one
+                    else{
+                        kMer_positions.put(current_kMer, i);
+                    }
+                }*/
+    
     public static void main(String[] args) {
-       // System.out.print(topKey(kMerCount("acaaccccac", 2)));
+       //System.out.print(topKey(kMerCount("acaaccccac", 2)));
         //System.out.println(kMerUnifiedCount("ccgg", 2));
         //System.out.println(topKey(kMerUnifiedCount("ccgg", 2)));
         //System.out.println("\n" + transcriptGenome("att"));
         
         //System.out.println(findKMerPositions("acttgactattt", "tt"));
         
-        System.out.println(findKMerClumps("taggggggtacaca", 2, 1));
+        //System.out.println(findKMerClumps("taggggggtacaca", 2, 1));
+        System.out.println(kMerClumpCount("cacaaaacaaca", 2, 2));
     }
 
 }
